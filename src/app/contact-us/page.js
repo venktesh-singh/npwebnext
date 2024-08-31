@@ -81,7 +81,7 @@ export default function Page() {
                 <section className="landing-hero" style={{ paddingBottom: '0px' }}>
                     <figure className="hero-image">
                         <Image
-                            src="images/FB-Banner.jpg"
+                            src="/images/FB-Banner.jpg"
                             className="highlight-hero img-responsive"
                             title="About Us"
                             alt="store-lagos-banner.jpg"

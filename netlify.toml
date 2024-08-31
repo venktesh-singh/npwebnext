@@ -1,8 +1,14 @@
 [build]
+  publish = ".next"
   command = "npm run build"
-  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "16"
+
+[build]
+  functions = "netlify/functions"
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+from = "/*"
+to = "/"
+status = 200  
