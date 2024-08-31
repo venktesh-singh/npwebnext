@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
+import "./globals.css";  // Static import for CSS
 
-// Importing CSS files directly in the component
-import "../../public/vendor/aos/aos.css";
+// Static imports for CSS files
+import "../../public/vendor/aos/aos.css";  
 import "../../public/vendor/bootstrap/css/bootstrap.min.css";
 import "../../public/vendor/bootstrap-icons/bootstrap-icons.css";
 import "../../public/vendor/boxicons/css/boxicons.min.css";
@@ -12,7 +12,7 @@ import "../../public/vendor/swiper/swiper-bundle.min.css";
 import "../../public/css/style.css";
 import "../../public/css/responsive.css";
 
-import Header from "./components/common/Header/Header"
+import Header from "./components/common/Header/Header";
 import Footer from "./components/common/Footer/Footer";
 import Script from "next/script";
 
@@ -33,7 +33,7 @@ export default function RootLayout({
       <head>
         <meta charSet="utf-8" />
         <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-        <link href="assets/img/favicon.ico" rel="icon" />
+        <link href={`${process.env.BASE_URL || ''}/assets/img/favicon.ico`} rel="icon" />
         <title>Kohler Nepal Revamp</title>
         <meta content="" name="description" />
         <meta content="" name="keywords" />
@@ -42,16 +42,16 @@ export default function RootLayout({
         <Header />
         {children}
         <Footer />
-        <Script src="/vendor/purecounter/purecounter_vanilla.js" strategy="afterInteractive" />
-        <Script src="/vendor/aos/aos.js" strategy="afterInteractive" />  
-        <Script src="/vendor/bootstrap/js/bootstrap.bundle.min.js" strategy="afterInteractive" />
-        <Script src="/vendor/glightbox/js/glightbox.min.js" strategy="afterInteractive" />
-        <Script src="/vendor/isotope-layout/isotope.pkgd.min.js" strategy="afterInteractive" />
-        <Script src="/vendor/swiper/swiper-bundle.min.js" strategy="afterInteractive" />
-        <Script src="/vendor/waypoints/noframework.waypoints.js" strategy="afterInteractive" />
-        <Script src="/vendor/php-email-form/validate.js" strategy="afterInteractive" />
+        <Script src={`${process.env.BASE_URL || ''}/vendor/purecounter/purecounter_vanilla.js`} strategy="afterInteractive" />
+        <Script src={`${process.env.BASE_URL || ''}/vendor/aos/aos.js`} strategy="afterInteractive" />
+        <Script src={`${process.env.BASE_URL || ''}/vendor/bootstrap/js/bootstrap.bundle.min.js`} strategy="afterInteractive" />
+        <Script src={`${process.env.BASE_URL || ''}/vendor/glightbox/js/glightbox.min.js`} strategy="afterInteractive" />
+        <Script src={`${process.env.BASE_URL || ''}/vendor/isotope-layout/isotope.pkgd.min.js`} strategy="afterInteractive" />
+        <Script src={`${process.env.BASE_URL || ''}/vendor/swiper/swiper-bundle.min.js`} strategy="afterInteractive" />
+        <Script src={`${process.env.BASE_URL || ''}/vendor/waypoints/noframework.waypoints.js`} strategy="afterInteractive" />
+        <Script src={`${process.env.BASE_URL || ''}/vendor/php-email-form/validate.js`} strategy="afterInteractive" />
         <Script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js" strategy="afterInteractive" />
-        <Script type="module" src="/js/main.js" strategy="afterInteractive" />
+        <Script type="module" src={`${process.env.BASE_URL || ''}/js/main.js`} strategy="afterInteractive" />
       </body>
     </html>
   );
