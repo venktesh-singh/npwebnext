@@ -5,7 +5,7 @@
   "homepage": "https://npwebapp.netlify.app",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",  
+    "build": "next build",
     "clean": "rm -rf .next",
     "postbuild": "netlify-plugin-nextjs",
     "start": "next start",
@@ -19,8 +19,8 @@
     "react-toastify": "^10.0.5"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
+    "@types/node": "^20.16.4",
+    "@types/react": "^18.3.5",
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.5",
