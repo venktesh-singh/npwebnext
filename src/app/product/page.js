@@ -1,22 +1,29 @@
-'use client';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
+import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
 import Leftmenu from '../components/common/Sidebar/Leftmenu';
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || `https://npkohlercompaignapi.onrender.com/api/v1`;
+// Skeleton Loader Component
+const SkeletonLoader = () => {
+    return (
+        <div className="col-sm-4">
+            <div className="product-box skeleton">
+                <div className="image">
+                    <div className="skeleton-img"></div>
+                </div>
+                <div className="info">
+                    <div className="skeleton-title"></div>
+                    <div className="skeleton-subtitle"></div>
+                    <div className="skeleton-sku"></div>
+                    <div className="skeleton-inquiry"></div>
+                </div>
+            </div>
+        </div>
+    );
+};
 
-function popupModal() {
-    const modal = document.querySelector(".modelPopup1");
-    modal.classList.toggle("show-modal");
-  
-    document.querySelectorAll('.place-an-enquiry').forEach(button => {
-      button.addEventListener('click', function() {
-        document.getElementById('sku_subtitle').value = this.getAttribute('data-pname');
-        document.getElementById('sku').value = this.getAttribute('data-pmodel');
-      });
-    });
-  } 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://npkohlercompaignapi.onrender.com/api/v1';
 
 export default function Page() {
     const [products, setProducts] = useState([]);
@@ -43,12 +50,6 @@ export default function Page() {
 
         fetchProducts();
     }, []);
-
-    console.log("Check Product", products);
-
-    if (loading) {
-        return <div>Loading...</div>;
-    }
 
     if (error) {
         return <div>Error: {error}</div>;
@@ -83,8 +84,15 @@ export default function Page() {
         return hoveredAttribute[productId] || selectedAttribute[productId] || products.find(product => product._id === productId).attributes[0];
     };
 
+    const metaTitle = products.length ? `${products[0].product_title} - Rain Head` : 'Rain Head';
+    const metaDescription = products.length ? `Check out the ${products[0].product_title} with modern design and exceptional power.` : 'Explore our Rain Head collection with modern design and innovation.';
+
     return (
         <>
+            <Head>
+                <title>{metaTitle}</title>
+                <meta name="description" content={metaDescription} />
+            </Head>
             <main id="main">
                 <div className="inner-page product-list">
                     <div className="container-fluid">
@@ -118,57 +126,61 @@ export default function Page() {
                                 <div className="col-sm-9 right-side">
                                     <div className="right-section">
                                         <div className="row">
-                                            {products.map((product) => {
-                                                const activeAttribute = getActiveAttribute(product._id);
-                                                return (
-                                                    <div className="col-sm-4" key={product._id}>
-                                                        <div className="product-box">
-                                                            <div className="image">
-                                                                <Image
-                                                                    src={activeAttribute.single_img || '/images/default.jpg'}
-                                                                    alt={activeAttribute.title || 'Product Image'}
-                                                                    width={400}
-                                                                    height={400}
-                                                                />
-                                                            </div>
-                                                            <div className="info">
-                                                                <div className="tabs-color">
-                                                                    {product.attributes.map((att) => (
-                                                                        <span
-                                                                            className={`color ${att.color_name}`}
-                                                                            key={att._id} // Assuming each attribute has a unique _id
-                                                                            onClick={() => handleAttributeChange(product._id, att)}
-                                                                            onMouseEnter={() => handleMouseEnter(product._id, att)}
-                                                                            onMouseLeave={() => handleMouseLeave(product._id)}
-                                                                            style={{
-                                                                                border: (hoveredAttribute[product._id] === att || selectedAttribute[product._id] === att)
-                                                                                    ? '1px solid #000'
-                                                                                    : 'none',
-                                                                            }}
-                                                                        >
-                                                                            <Image
-                                                                                src={att.color_image || '/images/default-color.jpg'}
-                                                                                alt={att.color || 'Color Image'}
-                                                                                width={30}
-                                                                                height={30}
-                                                                            />
-                                                                        </span>
-                                                                    ))}
+                                            {loading
+                                                ? Array(6)
+                                                    .fill(0)
+                                                    .map((_, index) => <SkeletonLoader key={index} />)
+                                                : products.map((product) => {
+                                                    const activeAttribute = getActiveAttribute(product._id);
+                                                    return (
+                                                        <div className="col-sm-4" key={product._id}>
+                                                            <div className="product-box">
+                                                                <div className="image">
+                                                                    <Image
+                                                                        src={activeAttribute.single_img || '/images/default.jpg'}
+                                                                        alt={activeAttribute.title || 'Product Image'}
+                                                                        width={400}
+                                                                        height={400}
+                                                                    />
                                                                 </div>
-                                                                <h3>{product.product_title}</h3>
-                                                                <p>{activeAttribute.sku_subtitle}</p>
-                                                                <div className="pro-info">
-                                                                    <p className="title">{activeAttribute.title}</p>
-                                                                    <p className="sku" id="skuid">{activeAttribute.sku}</p>
-                                                                </div>
-                                                                <div className="btm-inquiry">
-                                                                    <Link href="javascript:" className="enqbtn place-an-enquiry" data-pname={activeAttribute.sku_subtitle} data-pmodel={activeAttribute.sku} onClick={() => {popupModal()}}>Place an Enquiry</Link>
+                                                                <div className="info">
+                                                                    <div className="tabs-color">
+                                                                        {product.attributes.map((att) => (
+                                                                            <span
+                                                                                className={`color ${att.color_name}`}
+                                                                                key={att._id}
+                                                                                onClick={() => handleAttributeChange(product._id, att)}
+                                                                                onMouseEnter={() => handleMouseEnter(product._id, att)}
+                                                                                onMouseLeave={() => handleMouseLeave(product._id)}
+                                                                                style={{
+                                                                                    border: (hoveredAttribute[product._id] === att || selectedAttribute[product._id] === att)
+                                                                                        ? '1px solid #000'
+                                                                                        : 'none',
+                                                                                }}
+                                                                            >
+                                                                                <Image
+                                                                                    src={att.color_image || '/images/default-color.jpg'}
+                                                                                    alt={att.color || 'Color Image'}
+                                                                                    width={30}
+                                                                                    height={30}
+                                                                                />
+                                                                            </span>
+                                                                        ))}
+                                                                    </div>
+                                                                    <h3>{product.product_title}</h3>
+                                                                    <p>{activeAttribute.sku_subtitle}</p>
+                                                                    <div className="pro-info">
+                                                                        <p className="title">{activeAttribute.title}</p>
+                                                                        <p className="sku" id="skuid">{activeAttribute.sku}</p>
+                                                                    </div>
+                                                                    <div className="btm-inquiry">
+                                                                        <Link href="javascript:" className="enqbtn place-an-enquiry" data-pname={activeAttribute.sku_subtitle} data-pmodel={activeAttribute.sku} onClick={() => {popupModal()}}>Place an Enquiry</Link>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                );
-                                            })}
+                                                    );
+                                                })}
                                         </div>
                                     </div>
                                 </div>

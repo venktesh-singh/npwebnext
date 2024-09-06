@@ -3,15 +3,20 @@ import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import Image from 'next/image';
+import * as Yup from 'yup';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || `https://npkohlercompaignapi.onrender.com/api/v1`;
 
+const validationSchema = Yup.object({
+    name: Yup.string().required('Full Name is required'),
+    city: Yup.string().required('City is required'),
+    phone: Yup.string().matches(/^[0-9\b]+$/, 'Invalid phone number').required('Phone is required'),
+    email: Yup.string().email('Invalid email address').required('Email is required'),
+    request: Yup.string().required('Request is required'),
+});
+
 export default function Page() {
-    const [name, setName] = useState("");
-    const [city, setCity] = useState("");
-    const [phone, setPhone] = useState("");
-    const [email, setEmail] = useState("");
-    const [request, setRequest] = useState("");
     const [contact, setContact] = useState(null);
     const [error, setError] = useState(null);
 
@@ -28,22 +33,19 @@ export default function Page() {
         fetchData();
     }, []);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const contactData = { name, city, phone, email, request };
-
+    const handleSubmit = async (values, { resetForm }) => {
         try {
             const response = await fetch(`${BASE_URL}/contacts/add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(contactData)
+                body: JSON.stringify(values)
             });
 
             if (response.ok) {
                 const result = await response.json();
-                toast.success('Contact us Form submitted successfully!', {
+                toast.success('Contact Us form submitted successfully!', {
                     position: "top-center",
                     autoClose: 3000,
                     hideProgressBar: true,
@@ -52,12 +54,8 @@ export default function Page() {
                     draggable: true,
                     progress: undefined,
                 });
-                // Reset form fields after successful submission
-                setName("");
-                setCity("");
-                setPhone("");
-                setEmail("");
-                setRequest("");
+                // Reset form after successful submission
+                resetForm();
             } else {
                 const errorData = await response.json();
                 toast.error(`Error submitting contact: ${errorData.message}`);
@@ -76,7 +74,7 @@ export default function Page() {
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
                 }}
-            />
+            />  
             <div className="inner-page request-quote">
                 <section className="landing-hero" style={{ paddingBottom: '0px' }}>
                     <figure className="hero-image">
@@ -122,101 +120,106 @@ export default function Page() {
                                             </div>
 
                                             <div className="col-md-6 col-sm-6 col-xs-12">
-                                                <form id="contact-us" className="validation-decorator" onSubmit={handleSubmit}>
-                                                    <div className="form-group">
-                                                        <label htmlFor="name" className="control-label">
-                                                            Name*
-                                                        </label>
-                                                        <input
-                                                            className="form-control"
-                                                            id="name"
-                                                            name="name"
-                                                            required
-                                                            type="text"
-                                                            value={name}
-                                                            onChange={e => setName(e.target.value)}
-                                                        />
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <label htmlFor="city" className="control-label">
-                                                            City*
-                                                        </label>
-                                                        <input
-                                                            className="form-control"
-                                                            id="city"
-                                                            name="city"
-                                                            required
-                                                            type="text"
-                                                            value={city}
-                                                            onChange={e => setCity(e.target.value)}
-                                                        />
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <label htmlFor="phone" className="control-label">
-                                                            Phone*
-                                                        </label>
-                                                        <input
-                                                            className="form-control"
-                                                            id="phone"
-                                                            name="phone"
-                                                            required
-                                                            type="tel"
-                                                            value={phone}
-                                                            onChange={e => setPhone(e.target.value)}
-                                                        />
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <label htmlFor="input-mail" className="control-label">
-                                                            Your Email Address*
-                                                        </label>
-                                                        <input
-                                                            className="form-control"
-                                                            id="input-mail"
-                                                            name="email"
-                                                            required
-                                                            type="email"
-                                                            value={email}
-                                                            onChange={e => setEmail(e.target.value)}
-                                                        />
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <p>
-                                                            <strong>
-                                                                Please describe in detail your request, question, or issue with your product*
-                                                            </strong>
-                                                        </p>
-                                                        <textarea
-                                                            className="form-control"
-                                                            id="request"
-                                                            name="request"
-                                                            required
-                                                            rows={8}
-                                                            value={request}
-                                                            onChange={e => setRequest(e.target.value)}
-                                                        />
-                                                    </div>
-                                                    <div className="form-group contact-btn-box">
-                                                        <div className="link-policy">
-                                                            <a href="http://www.us.kohler.com/us/Privacy-Statement/content/CNT1100001.htm">
-                                                                Privacy Policy
-                                                            </a>
-                                                        </div>
-                                                        <div id="html_element">&nbsp;</div>
-                                                        <div className="but">
-                                                            <button
-                                                                className="btn btn-block btn-contact submit-cubd-request"
-                                                                type="submit"
-                                                            >
-                                                                Send
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    {error && (
-                                                        <div className="alert alert-danger mt-3" role="alert">
-                                                            {error}
-                                                        </div>
+                                                <Formik
+                                                    initialValues={{
+                                                        name: '',
+                                                        city: '',
+                                                        phone: '',
+                                                        email: '',
+                                                        request: '',
+                                                    }}
+                                                    validationSchema={validationSchema}
+                                                    onSubmit={handleSubmit}
+                                                >
+                                                    {({ errors, touched }) => (
+                                                        <Form id="contact-us" className="validation-decorator">
+                                                            <div className="form-group">
+                                                                <label htmlFor="name" className="control-label">
+                                                                    Name*
+                                                                </label>
+                                                                <Field
+                                                                    id="name"
+                                                                    name="name"
+                                                                    type="text"
+                                                                    className={`form-control ${errors.name && touched.name ? 'is-invalid' : ''}`}
+                                                                />
+                                                                <ErrorMessage name="name" component="div" className="invalid-feedback" />
+                                                            </div>
+                                                            <div className="form-group">
+                                                                <label htmlFor="city" className="control-label">
+                                                                    City*
+                                                                </label>
+                                                                <Field
+                                                                    id="city"
+                                                                    name="city"
+                                                                    type="text"
+                                                                    className={`form-control ${errors.city && touched.city ? 'is-invalid' : ''}`}
+                                                                />
+                                                                <ErrorMessage name="city" component="div" className="invalid-feedback" />
+                                                            </div>
+                                                            <div className="form-group">
+                                                                <label htmlFor="phone" className="control-label">
+                                                                    Phone*
+                                                                </label>
+                                                                <Field
+                                                                    id="phone"
+                                                                    name="phone"
+                                                                    type="tel"
+                                                                    className={`form-control ${errors.phone && touched.phone ? 'is-invalid' : ''}`}
+                                                                />
+                                                                <ErrorMessage name="phone" component="div" className="invalid-feedback" />
+                                                            </div>
+                                                            <div className="form-group">
+                                                                <label htmlFor="email" className="control-label">
+                                                                    Your Email Address*
+                                                                </label>
+                                                                <Field
+                                                                    id="email"
+                                                                    name="email"
+                                                                    type="email"
+                                                                    className={`form-control ${errors.email && touched.email ? 'is-invalid' : ''}`}
+                                                                />
+                                                                <ErrorMessage name="email" component="div" className="invalid-feedback" />
+                                                            </div>
+                                                            <div className="form-group">
+                                                                <p>
+                                                                    <strong>
+                                                                        Please describe in detail your request, question, or issue with your product*
+                                                                    </strong>
+                                                                </p>
+                                                                <Field
+                                                                    as="textarea"
+                                                                    id="request"
+                                                                    name="request"
+                                                                    rows={8}
+                                                                    className={`form-control ${errors.request && touched.request ? 'is-invalid' : ''}`}
+                                                                />
+                                                                <ErrorMessage name="request" component="div" className="invalid-feedback" />
+                                                            </div>
+                                                            <div className="form-group contact-btn-box">
+                                                                <div className="link-policy">
+                                                                    <a href="http://www.us.kohler.com/us/Privacy-Statement/content/CNT1100001.htm">
+                                                                        Privacy Policy
+                                                                    </a>
+                                                                </div>
+                                                                <div id="html_element">&nbsp;</div>
+                                                                <div className="but">
+                                                                    <button
+                                                                        className="btn btn-block btn-contact submit-cubd-request"
+                                                                        type="submit"
+                                                                    >
+                                                                        Send
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            {error && (
+                                                                <div className="alert alert-danger mt-3" role="alert">
+                                                                    {error}
+                                                                </div>
+                                                            )}
+                                                        </Form>
                                                     )}
-                                                </form>
+                                                </Formik>
                                             </div>
                                         </div>
                                     </div>

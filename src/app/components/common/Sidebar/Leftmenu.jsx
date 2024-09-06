@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from "react";
-import Link from 'next/link';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://npkohlercompaignapi.onrender.com/api/v1';
 
@@ -39,7 +40,25 @@ export default function Leftmenu() {
         fetchData();
     }, []);
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) {
+        return (
+            <ul>
+                {Array(5).fill().map((_, i) => (
+                    <li key={i}>
+                        <Skeleton height={30} width={200} />
+                        <ul>
+                            {Array(3).fill().map((_, j) => (
+                                <li key={j}>
+                                    <Skeleton height={20} width={180} />
+                                </li>
+                            ))}  
+                        </ul>
+                    </li>
+                ))}
+            </ul>
+        );
+    }
+
     if (error) return <div>Error: {error}</div>;
 
     const groupedData = categories.reduce((acc, category) => {
@@ -60,8 +79,9 @@ export default function Leftmenu() {
 
         return acc;  
     }, {});
-    const sscatURLs = subsubcategories?.map((checkUrl) => checkUrl.subsubcat_url) || [];
-    
+
+    const sscatURLs = subsubcategories.map(checkUrl => checkUrl.subsubcat_url) || [];
+
     return (
         <ul>
             {Object.entries(groupedData).map(([categoryUrl, subcats]) => (
@@ -79,15 +99,15 @@ export default function Leftmenu() {
                                     {subsubcats.map(subsubcat => (
                                         <li key={subsubcat.url}>
                                             {subsubcat.url && sscatURLs.includes(subsubcat.url) ? (
-                                                <Link href={`/product/${categoryUrl}/${subcatUrl}/${subsubcat.url}`}>
+                                                <a href={`/product/${categoryUrl}/${subcatUrl}/${subsubcat.url}`}>
                                                     {subsubcat.name}
-                                                </Link>
-                                                ) : (
-                                                <span>{subsubcat.name}</span> 
+                                                </a>
+                                            ) : (
+                                                <span>{subsubcat.name}</span>
                                             )}
                                         </li>
                                     ))}
-                                </ul>
+                                </ul>  
                             </li>
                         ))}
                     </ul>

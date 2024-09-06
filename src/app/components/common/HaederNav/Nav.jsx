@@ -97,9 +97,9 @@ export default function Header() {
                                     {groupedData['bathroom'][subcatUrl].map(subsubcat => (
                                       <li key={subsubcat.url}>
                                         {subsubcat.url && sscatURLs.includes(subsubcat.url) ? (
-                                        <Link href={`/product/bathroom/${subcatUrl}/${subsubcat.url}`}>
+                                        <a href={`/product/bathroom/${subcatUrl}/${subsubcat.url}`}>
                                           {subsubcat.name}
-                                        </Link>
+                                        </a>
                                           ) : (
                                             <span>{subsubcat.name}</span> 
                                         )}
@@ -156,9 +156,9 @@ export default function Header() {
                                     {groupedData['faucets'][subcatUrl].map(subsubcat => (
                                       <li key={subsubcat.url}>
                                         {subsubcat.url && sscatURLs.includes(subsubcat.url) ? (
-                                          <Link href={`/product/faucets/${subcatUrl}/${subsubcat.url}`}>
+                                          <a href={`/product/faucets/${subcatUrl}/${subsubcat.url}`}>
                                             {subsubcat.name}
-                                          </Link>
+                                          </a>
                                           ) : (
                                             <span>{subsubcat.name}</span> 
                                         )}
@@ -214,9 +214,9 @@ export default function Header() {
                                     {groupedData['toilet'][subcatUrl].map(subsubcat => (
                                       <li key={subsubcat.url}>
                                         {subsubcat.url && sscatURLs.includes(subsubcat.url) ? (
-                                        <Link href={`/product/toilet/${subcatUrl}/${subsubcat.url}`}>
+                                        <a href={`/product/toilet/${subcatUrl}/${subsubcat.url}`}>
                                           {subsubcat.name}
-                                        </Link>
+                                        </a>
                                           ) : (
                                             <span>{subsubcat.name}</span> 
                                         )}

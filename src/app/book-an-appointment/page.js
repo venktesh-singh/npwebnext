@@ -3,19 +3,21 @@ import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import Image from 'next/image';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || `https://npkohlercompaignapi.onrender.com/api/v1`;
 
-export default function Page(){
-    const [fname, setFname] = useState("");  
-    const [lname, setLname] = useState(""); 
-    const [email, setEmail] = useState("");
-    const [phone, setPhone] = useState("");
-    const [city, setCity] = useState("");
-    const [iam, setIam]  = useState("");
-    const [source, setSource] = useState("");  
-    const [medium, setMedium] = useState("");
-    const [campaign, setCampaign] = useState("");
+const validationSchema = Yup.object({
+    fname: Yup.string().required('First Name is required'),
+    lname: Yup.string().required('Last Name is required'),
+    email: Yup.string().email('Invalid email address').required('Email is required'),
+    phone: Yup.string().matches(/^[0-9\b]+$/, 'Invalid phone number').required('Phone is required'),
+    city: Yup.string().required('City is required'),
+    iam: Yup.string().required('Please select an I Am'),
+});
+
+export default function Page() {
     const [appoint, setAppoint] = useState(null);
     const [error, setError] = useState(null);
 
@@ -32,17 +34,14 @@ export default function Page(){
         fetchData();
     }, []);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const contactData = { fname, lname, city, phone, email, iam };
-
+    const handleSubmit = async (values, { resetForm }) => {
         try {
             const response = await fetch(`${BASE_URL}/appointments/add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(contactData)
+                body: JSON.stringify(values)
             });
 
             if (response.ok) {
@@ -57,15 +56,8 @@ export default function Page(){
                     progress: undefined,
                 });
                 
-                setFname("");
-                setLname("");
-                setEmail("");
-                setPhone("");
-                setCity("");
-                setIam("");
-                setSource("");
-                setMedium("");
-                setCampaign("");
+                // Reset form
+                resetForm();
             } else {
                 const errorData = await response.json();
                 toast.error(`Error submitting appointments: ${errorData.message}`);
@@ -89,14 +81,14 @@ export default function Page(){
                 <section className="landing-hero" style={{paddingBottom: '0px'}}>
                     <div className="has-edit-button">
                         <figure className="hero-image">
-                        <Image 
-                            src="/images/FB-Banner.jpg" 
-                            className="highlight-hero img-responsive" 
-                            title="About Us" 
-                            alt="store-lagos-banner.jpg"
-                            width={1903}
-                            height={724}
-                        />
+                            <Image 
+                                src="/images/FB-Banner.jpg" 
+                                className="highlight-hero img-responsive" 
+                                title="About Us" 
+                                alt="store-lagos-banner.jpg"
+                                width={1903}
+                                height={724}
+                            />
                         </figure>
                     </div>
                 </section>
@@ -104,123 +96,130 @@ export default function Page(){
                     <h2>Book Visit Appointment</h2>
                     <div className="top-btmtext newlc">
                         <p>
-                        To book an appointment, please share your details in the form below and someone from our team will get <br />
-                        in touch with you.
+                            To book an appointment, please share your details in the form below and someone from our team will get <br />
+                            in touch with you.
                         </p>
                     </div>
                     <hr />
                 </div>
                 <div className="input-area">
-                    <form className="validation-decorator" id="enq_form" onSubmit={handleSubmit}>
-                        <div className="form-group row">
-                            <div className="col-md-6 col-sm-12">
-                                <input 
-                                    className="form-control" 
-                                    id="fname" 
-                                    name="fname" 
-                                    value={fname} 
-                                    onChange={e => setFname(e.target.value)} 
-                                    required 
-                                    placeholder="First Name" 
-                                    type="text" 
-                                />
-                            </div>
-                            <div className="col-md-6 col-sm-12">
-                                <input 
-                                    className="form-control" 
-                                    id="lname" 
-                                    name="lname" 
-                                    value={lname} 
-                                    onChange={e => setLname(e.target.value)} 
-                                    required 
-                                    placeholder="Last Name" 
-                                    type="text" 
-                                />
-                            </div>
-                        </div>
-                        <div className="form-group row">
-                            <div className="col-md-6 col-sm-12">
-                                <input 
-                                    className="form-control" 
-                                    id="email" 
-                                    name="email" 
-                                    value={email} 
-                                    onChange={e => setEmail(e.target.value)} 
-                                    required 
-                                    placeholder="E-mail id" 
-                                    type="email" 
-                                />
-                            </div>
-                            <div className="col-md-6 col-sm-12">
-                                <input 
-                                    className="form-control" 
-                                    id="pnumber" 
-                                    name="phone" 
-                                    value={phone} 
-                                    onChange={e => setPhone(e.target.value)} 
-                                    required 
-                                    placeholder="Phone" 
-                                    type="text" 
-                                />
-                            </div>
-                        </div>
-                        <div className="form-group row">
-                            <div id="ktc" className="col-md-6 col-sm-12 kstoresec">
-                                <select 
-                                    name="city" 
-                                    id="kohlercity" 
-                                    value={city} 
-                                    onChange={e => setCity(e.target.value)} 
-                                    className="form-control" 
-                                    autoComplete="off"
-                                >
-                                    <option value="">--Select City--</option>
-                                    <option value="Biratnagar">Biratnagar</option>
-                                    <option value="Bhaktapur">Bhaktapur</option> 
-                                    <option value="Kathmandu">Kathmandu</option>
-                                    <option value="Manigram">Manigram</option>
-                                    <option value="Pokhara">Pokhara</option>
-                                </select>
-                            </div>
-                            <div className="col-md-6 col-sm-12">
-                                <select 
-                                    name="i_am" 
-                                    value={iam} 
-                                    onChange={e => setIam(e.target.value)}  
-                                    className="form-control"
-                                >
-                                    <option value="">--Select I Am--</option>
-                                    <option value="A Consumer">A Consumer</option>
-                                    <option value="An Architect">An Architect</option>
-                                    <option value="A Developer/Builder">A Developer/Builder</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className="col-md-12 col-sm-12 capt" style={{marginTop: '30px'}}>
-                            <div className="g-recaptcha" data-sitekey="6LejhiIeAAAAAAH_QXxjIkR4fBC4z_UTYlRlgI2q" />
-                            <div className="text-danger" id="captcha_error" />
-                        </div>
-                        <div className="col-xs-12 col-md-12 col-sm-12 text-center">
-                            <div id="html_element">&nbsp;</div>
-                            <input type="hidden" name="utm_source" value={source} onChange={e=> setSource(e.target.value)}  />
-                            <input type="hidden" name="utm_medium" value={medium} onChange={e=> setMedium(e.target.value)} />
-                            <input type="hidden" name="utm_campaign" value={campaign} onChange={e=> setCampaign(e.target.value)} />
-                            <button 
-                                className="btn btn-block btn-contact submit-btn" 
-                                type="submit" 
-                                style={{background: '#000', color: '#fff'}}
-                            >
-                                Book Now  
-                            </button>
-                        </div>
-                        {error && (
-                            <div className="alert alert-danger mt-3" role="alert">
-                                {error}
-                            </div>
+                    <Formik
+                        initialValues={{
+                            fname: '',
+                            lname: '',
+                            email: '',
+                            phone: '',
+                            city: '',
+                            iam: '',
+                            source: '',
+                            medium: '',
+                            campaign: ''
+                        }}
+                        validationSchema={validationSchema}
+                        onSubmit={handleSubmit}
+                    >
+                        {({ errors, touched }) => (
+                            <Form className="validation-decorator" id="enq_form">
+                                <div className="form-group row">
+                                    <div className="col-md-6 col-sm-12">
+                                        <Field
+                                            type="text"
+                                            name="fname"
+                                            placeholder="First Name"
+                                            className={`form-control ${errors.fname && touched.fname ? 'is-invalid' : ''}`}
+                                        />
+                                        <ErrorMessage name="fname" component="div" className="invalid-feedback" />
+                                    </div>
+                                    <div className="col-md-6 col-sm-12">
+                                        <Field
+                                            type="text"
+                                            name="lname"
+                                            placeholder="Last Name"
+                                            className={`form-control ${errors.lname && touched.lname ? 'is-invalid' : ''}`}
+                                        />
+                                        <ErrorMessage name="lname" component="div" className="invalid-feedback" />
+                                    </div>
+                                </div>
+                                <div className="form-group row">
+                                    <div className="col-md-6 col-sm-12">
+                                        <Field
+                                            type="email"
+                                            name="email"
+                                            placeholder="E-mail id"
+                                            className={`form-control ${errors.email && touched.email ? 'is-invalid' : ''}`}
+                                        />
+                                        <ErrorMessage name="email" component="div" className="invalid-feedback" />
+                                    </div>
+                                    <div className="col-md-6 col-sm-12">
+                                        <Field
+                                            type="text"
+                                            name="phone"
+                                            placeholder="Phone"
+                                            className={`form-control ${errors.phone && touched.phone ? 'is-invalid' : ''}`}
+                                        />
+                                        <ErrorMessage name="phone" component="div" className="invalid-feedback" />
+                                    </div>
+                                </div>
+                                <div className="form-group row">
+                                    <div id="ktc" className="col-md-6 col-sm-12 kstoresec">
+                                        <Field as="select" name="city" className={`form-control ${errors.city && touched.city ? 'is-invalid' : ''}`}>
+                                            <option value="">--Select City--</option>
+                                            <option value="Biratnagar">Biratnagar</option>
+                                            <option value="Bhaktapur">Bhaktapur</option>
+                                            <option value="Kathmandu">Kathmandu</option>
+                                            <option value="Manigram">Manigram</option>
+                                            <option value="Pokhara">Pokhara</option>
+                                        </Field>
+                                        <ErrorMessage name="city" component="div" className="invalid-feedback" />
+                                    </div>
+                                    <div className="col-md-6 col-sm-12">
+                                        <Field as="select" name="iam" className={`form-control ${errors.iam && touched.iam ? 'is-invalid' : ''}`}>
+                                            <option value="">--Select I Am--</option>
+                                            <option value="A Consumer">A Consumer</option>
+                                            <option value="An Architect">An Architect</option>
+                                            <option value="A Developer/Builder">A Developer/Builder</option>
+                                        </Field>
+                                        <ErrorMessage name="iam" component="div" className="invalid-feedback" />
+                                    </div>
+                                </div>
+                                <div className="form-group row">
+                                    <div className="col-md-6 col-sm-12">
+                                        <Field
+                                            hidden
+                                            type="text"
+                                            name="source"
+                                            placeholder="Source"
+                                        />
+                                    </div>
+                                    <div className="col-md-6 col-sm-12">
+                                        <Field
+                                            hidden
+                                            type="text"
+                                            name="medium"
+                                            placeholder="Medium"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-group row">
+                                    <div className="col-md-6 col-sm-12">
+                                        <Field
+                                            hidden
+                                            type="text"
+                                            name="campaign"
+                                            placeholder="Campaign"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="form-group row">
+                                    <div className="col-md-12 col-sm-12 text-center">
+                                        <button type="submit" className="btn btn-primary">Submit</button>
+                                    </div>
+                                </div>
+                            </Form>
                         )}
-                    </form>
+                    </Formik>
                 </div>
             </div>
         </>
-      )
-}      
+    );
+}
