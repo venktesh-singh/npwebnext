@@ -4197,3 +4197,7 @@ cursor:pointer;
   margin: 10px 0;
   background-color: #c0c0c0;
 }
+
+.image img {
+    min-height: 495px;
+}
