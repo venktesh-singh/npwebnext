@@ -18,7 +18,7 @@ export default function Leftmenu() {
                 const categoriesResponse = await fetch(`${BASE_URL}/categories`);
                 const subcategoriesResponse = await fetch(`${BASE_URL}/subcategories`);
                 const subsubcategoriesResponse = await fetch(`${BASE_URL}/subsubcategories`);
-
+                
                 if (!categoriesResponse.ok || !subcategoriesResponse.ok || !subsubcategoriesResponse.ok) {
                     throw new Error('Failed to fetch data');
                 }
@@ -39,7 +39,7 @@ export default function Leftmenu() {
 
         fetchData();
     }, []);
-
+    
     if (loading) {
         return (
             <ul>
@@ -81,7 +81,7 @@ export default function Leftmenu() {
     }, {});
 
     const sscatURLs = subsubcategories.map(checkUrl => checkUrl.subsubcat_url) || [];
-
+    //console.log("Checked Grouped Data",sscatURLs)
     return (
         <ul>
             {Object.entries(groupedData).map(([categoryUrl, subcats]) => (

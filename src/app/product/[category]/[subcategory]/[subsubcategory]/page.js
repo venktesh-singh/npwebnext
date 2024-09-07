@@ -25,18 +25,21 @@ async function fetchSubcategories(cat_url) {
 }
 
 async function fetchSubsubcategories(subcat_url) {
-  try {
+  try {  
+    
     const response = await fetch(`${BASE_URL}/subsubcategories?subcategory=${subcat_url}`);
     if (!response.ok) {
       throw new Error(`Failed to fetch subsubcategories for ${subcat_url}`);
     }
     const data = await response.json();
+    
     return data.subsubcat || []; 
   } catch (error) {
     console.error(error);
     return [];
   }
 }
+
 
 export async function generateStaticParams() {
   try {
@@ -79,18 +82,21 @@ export default async function Page({ params }) {
     const response = await fetch(`${BASE_URL}/products/${category}/${subcategory}/${subsubcategory}`);
     
     if (!response.ok) {
-      notFound();
+      console.error('Error fetching products:', response.statusText);
+      notFound();  
       return null;
     }
 
     const data = await response.json();
-    const products = data.products;
-
-    if (!products || products.length === 0) {
+    const products = data.products || [];
+    
+    
+    if (products.length === 0) {
+      console.error('No products found for the given parameters.');
       notFound();
       return null;
     }
-
+    
     const subsubcategoryName = products[0]?.subsubcategory?.subsubcat_name || 'No Subsubcategory';
     const subcategoryName = products[0]?.subcategory?.subcat_name || 'No Subcategory';
     const categoryName = products[0]?.category?.cat_name || 'No Category';
@@ -140,6 +146,7 @@ export default async function Page({ params }) {
       </>
     );
   } catch (error) {
+    console.error('Error fetching data:', error);
     notFound();
     return null;
   }

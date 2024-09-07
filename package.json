@@ -2,17 +2,15 @@
   "name": "npweb",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://npwebapp.netlify.app",
+  "homepage": "https://npwebnext.vercel.app",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "clean": "rm -rf .next",
-    "postbuild": "netlify-plugin-nextjs",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
-    "@netlify/plugin-nextjs": "^5.7.0",
     "formik": "^2.4.6",
     "next": "^14.2.7",
     "react": "^18",
