@@ -34,9 +34,7 @@ export default function RootLayout({
         <meta charSet="utf-8" />
         <meta content="width=device-width, initial-scale=1.0" name="viewport" />
         <link href={`${process.env.BASE_URL || ''}/assets/img/favicon.ico`} rel="icon" />
-        <title>Kohler Nepal Revamp</title>
-        <meta content="" name="description" />
-        <meta content="" name="keywords" />
+        
       </head>
       <body className={inter.className}>
         <Header />
