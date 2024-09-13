@@ -32,7 +32,7 @@ async function fetchSubsubcategories(subcat_url) {
       throw new Error(`Failed to fetch subsubcategories for ${subcat_url}`);
     }
     const data = await response.json();
-    
+    //console.log("Check Nepal Data",data);
     return data.subsubcat || []; 
   } catch (error) {
     console.error(error);
@@ -87,9 +87,9 @@ export default async function Page({ params }) {
       return null;
     }
 
-    const data = await response.json();
+    const data = await response.json(); 
     const products = data.products || [];
-    
+    //console.log("Check Product", products)
     
     if (products.length === 0) {
       console.error('No products found for the given parameters.');
@@ -100,7 +100,7 @@ export default async function Page({ params }) {
     const subsubcategoryName = products[0]?.subsubcategory?.subsubcat_name || 'No Subsubcategory';
     const subcategoryName = products[0]?.subcategory?.subcat_name || 'No Subcategory';
     const categoryName = products[0]?.category?.cat_name || 'No Category';
-
+    
     return (
       <>
         <main id="main">
@@ -151,3 +151,56 @@ export default async function Page({ params }) {
     return null;
   }
 }
+
+
+export async function generateMetadata({ params }) {
+  const { category, subcategory, subsubcategory } = params;
+
+  try {
+    const response = await fetch(`${BASE_URL}/products/${category}/${subcategory}/${subsubcategory}`);
+    
+    if (!response.ok) {
+      console.error('Error fetching products:', response.statusText);
+      notFound();  
+      return null;
+    }
+
+    const data = await response.json();
+    const products = data.products || [];
+
+    if (products.length === 0) {
+      console.error('No products found for the given parameters.');
+      notFound();
+      return null;
+    }
+
+    const product = products[0];
+    //console.log("Check Product",product) 
+    const metaTitle = product?.subsubcategory?.meta_title || `Product - ${subsubcategory}`;
+    const metaDescription = product?.subsubcategory?.meta_desc || `Explore ${subsubcategory} under ${subcategory} in ${category}. Modern design meets exceptional power, innovation, and comfort.`;
+
+    //console.log("Check Product Title", metaTitle);
+    //console.log("Check Product Description", metaDescription);
+
+    return {
+      title: metaTitle, 
+      description: metaDescription, 
+      openGraph: {
+        title: metaTitle, 
+        description: metaDescription, 
+        url: `https://npwebnext.vercel.app/product/${category}/${subcategory}/${subsubcategory}`, 
+      },
+      twitter: {
+        title: metaTitle, 
+        description: metaDescription 
+      },
+      alternates: {
+        canonical: `https://npwebnext.vercel.app/product/${category}/${subcategory}/${subsubcategory}`, 
+      },
+    };
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return null;
+  }
+}
+
