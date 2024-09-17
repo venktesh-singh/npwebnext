@@ -148,7 +148,7 @@ const ClientComponent = ({ initialProducts }) => {
                       popupModal();
                     }}
                   >
-                    Place an Enquiry
+                    Place an Enquiry Testing
                   </Link>
                 </div>
               </div>
