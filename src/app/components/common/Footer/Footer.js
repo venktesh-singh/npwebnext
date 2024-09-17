@@ -254,7 +254,7 @@ export default function Footer() {
                             type="text"
                             className="form-control"
                             id="phonr-number"
-                            name="phone"
+                            name="name"
                             placeholder="Enter Full Name"
                             required=""
                             value={name}
