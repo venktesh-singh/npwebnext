@@ -176,7 +176,7 @@ export default function Page() {
                                                                         <p className="sku" id="skuid">{activeAttribute.sku}</p>
                                                                     </div>
                                                                     <div className="btm-inquiry">
-                                                                        <Link href="javascript:" className="enqbtn place-an-enquiry" data-pname={activeAttribute.sku_subtitle} data-pmodel={activeAttribute.sku} onClick={() => {popupModal()}}>Place an Enquiry</Link>
+                                                                        <Link href="javascript:" className="enqbtn place-an-enquiry" data-pname={activeAttribute.sku_subtitle} data-pmodel={activeAttribute.sku} onClick={() => {popupModal()}}>Place an Enquiry Testing</Link>
                                                                     </div>
                                                                 </div>
                                                             </div>
